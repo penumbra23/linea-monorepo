@@ -20,7 +20,7 @@ engine-jwt-disabled=true
 rpc-http-enabled=true
 rpc-http-host="0.0.0.0"
 rpc-http-port=8545
-rpc-http-api=["ADMIN","DEBUG","NET","ETH","CLIQUE","MINER","WEB3","TRACE","LINEA"]
+rpc-http-api=["ADMIN","DEBUG","NET","ETH","CLIQUE","MINER","WEB3","TRACE","LINEA", "PENUMBRA"]
 rpc-http-cors-origins=["*"]
 rpc-http-max-active-connections=20000
 
@@ -47,7 +47,7 @@ api-gas-and-priority-fee-upper-bound-coefficient=300
 poa-block-txs-selection-max-time=1000
 
 # plugins
-plugins=["LineaEstimateGasEndpointPlugin","LineaL1FinalizationTagUpdaterPlugin","LineaExtraDataPlugin","LineaTransactionPoolValidatorPlugin","LineaBundleEndpointsPlugin","LineaSetExtraDataEndpointPlugin","LineaTransactionSelectorPlugin"]
+plugins=["LineaEstimateGasEndpointPlugin","LineaL1FinalizationTagUpdaterPlugin","LineaExtraDataPlugin","LineaTransactionPoolValidatorPlugin","LineaBundleEndpointsPlugin","LineaSetExtraDataEndpointPlugin","LineaTransactionSelectorPlugin", "PenumbraHelloWorldEndpointPlugin"]
 plugin-linea-module-limit-file-path="/var/lib/besu/traces-limits.toml"
 plugin-linea-deny-list-path="/var/lib/besu/deny-list.txt"
 plugin-linea-estimate-gas-compatibility-mode-enabled=false
