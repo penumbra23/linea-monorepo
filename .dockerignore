@@ -3,3 +3,6 @@
 **/tsconfig.build.tsbuildinfo
 **/coverage
 **/dist
+**/build
+tmp/
+linea-besu-package/tmp
