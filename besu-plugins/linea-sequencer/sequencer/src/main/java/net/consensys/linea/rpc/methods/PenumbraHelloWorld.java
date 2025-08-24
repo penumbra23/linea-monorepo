@@ -131,7 +131,7 @@ public class PenumbraHelloWorld {
 
       log.debug("[{}] Parsed call parameters: {}", logId, name);
 
-      final var message = "Hello " + name;
+      final var message = "Hello to " + name;
 
       final var response =
           new Response(message);

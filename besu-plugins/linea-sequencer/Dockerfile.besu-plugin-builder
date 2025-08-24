@@ -1,0 +1,49 @@
+FROM ubuntu:24.10 AS base
+
+USER builder
+
+RUN apt update && apt install -y default-jre default-jdk git unzip wget
+
+# This step copies only the gradle files used for downloading all dependencies
+# Intended for caching dependencies
+FROM base AS deps
+WORKDIR /build
+
+# Only to version the artifact properly (maybe there's a better way of doing this)
+COPY .git .
+
+COPY gradlew .
+COPY build.gradle .
+COPY gradle ./gradle
+COPY gradle.properties .
+COPY settings.gradle .
+COPY buildSrc ./buildSrc
+COPY besu-plugins/linea-sequencer/gradle ./besu-plugins/linea-sequencer/gradle
+COPY besu-plugins/linea-sequencer/build.gradle ./besu-plugins/linea-sequencer/build.gradle
+COPY besu-plugins/linea-sequencer/sequencer/build.gradle ./besu-plugins/linea-sequencer/sequencer/build.gradle
+
+RUN ./gradlew besu-plugins:linea-sequencer:sequencer:artifacts --no-daemon --build-cache
+
+# Builds the linea-sequencer plugin
+FROM deps AS build
+WORKDIR /build
+
+COPY besu-plugins/linea-sequencer/sequencer/src ./besu-plugins/linea-sequencer/sequencer/src
+RUN ./gradlew besu-plugins:linea-sequencer:sequencer:artifacts --no-daemon --build-cache
+
+# Step to inject the besu plugin artifacts from the build step
+FROM base AS injection
+WORKDIR /app
+
+COPY linea-besu-package ./linea-besu-package
+RUN cd linea-besu-package && ./scripts/assemble-packages.sh && rm ./tmp/besu/plugins/linea-sequencer-*.jar
+
+COPY --from=build /build/besu-plugins/linea-sequencer/sequencer/build/distributions/linea-sequencer-*.zip ./linea-besu-package
+
+RUN unzip ./linea-besu-package/linea-sequencer-*.zip linea-sequencer-*.jar -d linea-besu-package/tmp/besu/plugins/
+
+# Step to export the generated plugins to the host
+FROM injection AS final
+WORKDIR /out
+
+ENTRYPOINT ["/bin/sh", "-c" ,"cp /app/linea-besu-package/tmp/besu/plugins/*.jar /out"]

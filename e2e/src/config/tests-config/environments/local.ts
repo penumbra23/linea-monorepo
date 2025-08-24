@@ -4,8 +4,8 @@ import { GenesisBasedAccountManager } from "../accounts/genesis-based-account-ma
 import { Config } from "../types";
 
 const L1_RPC_URL = new URL("http://localhost:8445");
-const L2_RPC_URL = new URL("http://localhost:9045");
-const L2_BESU_NODE_RPC_URL = new URL("http://localhost:9045");
+const L2_RPC_URL = new URL("http://localhost:8545");
+const L2_BESU_NODE_RPC_URL = new URL("http://localhost:8545");
 const L2_BESU_FOLLOWER_NODE_RPC_URL = new URL("http://localhost:9245");
 const SHOMEI_ENDPOINT = new URL("http://localhost:8998");
 const SHOMEI_FRONTEND_ENDPOINT = new URL("http://localhost:8889");
