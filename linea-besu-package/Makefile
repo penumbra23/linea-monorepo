@@ -6,8 +6,18 @@ PLATFORM ?=
 assemble:
 	./scripts/assemble-packages.sh
 
+assemble-with-local-plugins:
+	./scripts/assemble-packages.sh --use-local-besu-plugins
+
 build:
 	$(MAKE) assemble
+	$(MAKE) __build
+
+build-local-plugins:
+	$(MAKE) assemble-with-local-plugins
+	$(MAKE) __build
+
+__build:
 	echo "IMAGE TAG=$(TAG)"
 	echo "PLATFORM=$(PLATFORM)"
 	if [ "$(PLATFORM)" = "" ]; then \

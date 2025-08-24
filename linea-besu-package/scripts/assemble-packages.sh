@@ -2,6 +2,18 @@
 
 source ./versions.env
 
+# Detect arguments
+
+# Uses the locally built besu plugins instead of downloading from releases
+USE_LOCAL_BESU_PLUGINS="${USE_LOCAL_BESU_PLUGINS:-false}"
+
+for arg in "$@"; do
+  if [[ "$arg" == "--use-local-besu-plugins" ]]; then
+    USE_LOCAL_BESU_PLUGINS=true
+    break
+  fi
+done
+
 mkdir -p ./tmp
 pushd ./tmp
 
@@ -16,11 +28,19 @@ cp ../versions.env ./besu/versions.txt
 mkdir -p ./besu/plugins
 cd ./besu/plugins
 
-echo "downloading the plugins"
-echo "getting linea_sequencer_plugin_version: $LINEA_SEQUENCER_PLUGIN_VERSION"
-wget -nv https://github.com/Consensys/linea-monorepo/releases/download/linea-sequencer-v$LINEA_SEQUENCER_PLUGIN_VERSION/linea-sequencer-v$LINEA_SEQUENCER_PLUGIN_VERSION.zip
-unzip -o linea-sequencer-v$LINEA_SEQUENCER_PLUGIN_VERSION.zip
-rm linea-sequencer-v$LINEA_SEQUENCER_PLUGIN_VERSION.zip
+if $USE_LOCAL_BESU_PLUGINS; then
+    echo "using local besu plugins"
+    # Reference from the besu-plugins folder in repo root
+    cp ../../../../besu-plugins/linea-sequencer/sequencer/build/distributions/linea-sequencer-*.zip .
+    unzip -o linea-sequencer-*.zip
+    rm linea-sequencer-*.zip
+else
+    echo "downloading the plugins"
+    echo "getting linea_sequencer_plugin_version: $LINEA_SEQUENCER_PLUGIN_VERSION"
+    wget -nv https://github.com/Consensys/linea-monorepo/releases/download/linea-sequencer-v$LINEA_SEQUENCER_PLUGIN_VERSION/linea-sequencer-v$LINEA_SEQUENCER_PLUGIN_VERSION.zip
+    unzip -o linea-sequencer-v$LINEA_SEQUENCER_PLUGIN_VERSION.zip
+    rm linea-sequencer-v$LINEA_SEQUENCER_PLUGIN_VERSION.zip
+fi
 
 echo "getting linea_finalized_tag_updater_plugin_version: $LINEA_FINALIZED_TAG_UPDATER_PLUGIN_VERSION"
 wget -nv https://github.com/Consensys/linea-monorepo/releases/download/linea-finalized-tag-updater-v$LINEA_FINALIZED_TAG_UPDATER_PLUGIN_VERSION/linea-finalized-tag-updater-v$LINEA_FINALIZED_TAG_UPDATER_PLUGIN_VERSION.jar
